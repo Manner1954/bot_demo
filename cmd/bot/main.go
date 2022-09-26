@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/Manner1954/bot/internal/app/commands"
+	"github.com/Manner1954/bot/internal/service/product"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
@@ -28,6 +30,9 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
+	productService := product.NewService()
+	commander := commands.NewCommander(bot, productService)
+
 	for update := range updates {
 		if update.Message == nil {
 			continue
@@ -35,24 +40,11 @@ func main() {
 
 		switch update.Message.Command() {
 		case "help":
-			helpCommand(bot, update.Message)
+			commander.Help(update.Message)
+		case "list":
+			commander.List(update.Message)
 		default:
-			defaultBehavior(bot, update.Message)
+			commander.Default(update.Message)
 		}
 	}
-}
-
-func helpCommand(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "/help - help")
-
-	bot.Send(msg)
-}
-
-func defaultBehavior(bot *tgbotapi.BotAPI, inputMessage *tgbotapi.Message) {
-	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
-
-	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
-	msg.ReplyToMessageID = inputMessage.MessageID
-
-	bot.Send(msg)
 }

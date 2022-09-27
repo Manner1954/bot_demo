@@ -4,8 +4,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (c *Commander) List(inputMessage *tgbotapi.Message) {
-	outMessageText := "Here all products: \n\n"
+func (c *Commander) Get(inputMessage *tgbotapi.Message) {
+	outMessageText := "Get product: \n\n"
 	products := c.productService.List()
 	for _, p := range products {
 		outMessageText += p.Title
@@ -18,5 +18,5 @@ func (c *Commander) List(inputMessage *tgbotapi.Message) {
 }
 
 func init() {
-	registeredCommands["list"] = (*Commander).List
+	registeredCommands["get"] = (*Commander).Get
 }

@@ -1,10 +1,10 @@
 package product
 
-type Product struct {
+type Entity struct {
 	Title string
 }
 
-var allProducts = []Product{
+var allEntities = []Entity{
 	{Title: "one"},
 	{Title: "two"},
 	{Title: "three"},

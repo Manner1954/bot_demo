@@ -1,4 +1,4 @@
-package commands
+package subdomain
 
 import (
 	"log"
@@ -6,15 +6,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (c *Commander) Default(inputMessage *tgbotapi.Message) {
+func (c *SubdomainCommander) Default(inputMessage *tgbotapi.Message) {
 	log.Printf("[%s] %s", inputMessage.From.UserName, inputMessage.Text)
 
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID, "You wrote: "+inputMessage.Text)
 	msg.ReplyToMessageID = inputMessage.MessageID
 
 	c.bot.Send(msg)
-}
-
-func init() {
-	registeredCommands["default"] = (*Commander).Default
 }

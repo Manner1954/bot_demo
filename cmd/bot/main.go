@@ -4,16 +4,19 @@ import (
 	"log"
 	"os"
 
-	"github.com/Manner1954/bot/internal/app/commands"
-	"github.com/Manner1954/bot/internal/service/product"
+	"github.com/Manner1954/bot/internal/app/router"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	godotenv.Load()
+	_ = godotenv.Load()
 
-	token := os.Getenv("TOKEN")
+	token, found := os.LookupEnv("TOKEN")
+
+	if !found {
+		log.Panic("Token isn't found in .env")
+	}
 
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
@@ -30,10 +33,9 @@ func main() {
 
 	updates := bot.GetUpdatesChan(u)
 
-	productService := product.NewService()
-	commander := commands.NewCommander(bot, productService)
+	router := router.NewRouter(bot)
 
 	for update := range updates {
-		commander.HandleUpdate(update)
+		router.HandleUpdate(update)
 	}
 }

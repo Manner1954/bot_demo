@@ -6,6 +6,11 @@ func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) List() []Product {
-	return allProducts
+func (s *Service) List() []Entity {
+	return allEntities
+}
+
+func (s *Service) Get(idx int) (*Entity, error) {
+	foundEntity := &allEntities[idx]
+	return foundEntity, nil
 }

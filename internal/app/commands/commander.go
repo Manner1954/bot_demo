@@ -1,34 +1,44 @@
 package commands
 
 import (
-	"github.com/Manner1954/bot/internal/service/product"
+	"log"
+
+	"github.com/Manner1954/bot/internal/app/commands/subdomain"
+	"github.com/Manner1954/bot/internal/app/path"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-var registeredCommands = map[string]func(c *Commander, msg *tgbotapi.Message){}
+type CommanderInterface interface {
+	HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath)
+	HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath)
+}
 
 type Commander struct {
-	bot            *tgbotapi.BotAPI
-	productService *product.Service
+	bot                *tgbotapi.BotAPI
+	subdomainCommander CommanderInterface
 }
 
-func NewCommander(bot *tgbotapi.BotAPI, productService *product.Service) *Commander {
+func NewCommander(bot *tgbotapi.BotAPI) *Commander {
 	return &Commander{
-		bot:            bot,
-		productService: productService,
+		bot:                bot,
+		subdomainCommander: subdomain.NewSubdomainCommander(bot),
 	}
 }
 
-func (c *Commander) HandleUpdate(update tgbotapi.Update) {
-	if update.Message == nil {
-		return
+func (c *Commander) HandleCallback(callback *tgbotapi.CallbackQuery, callbackPath path.CallbackPath) {
+	switch callbackPath.Subdomain {
+	case "demo":
+		c.subdomainCommander.HandleCallback(callback, callbackPath)
+	default:
+		log.Printf("SubdomainCommander.HandleCallback: unknow subdomain - %s", callbackPath.Subdomain)
 	}
+}
 
-	command, ok := registeredCommands[update.Message.Command()]
-
-	if ok {
-		command(c, update.Message)
-	} else {
-		c.Default(update.Message)
+func (c *Commander) HandleCommand(msg *tgbotapi.Message, commandPath path.CommandPath) {
+	switch commandPath.Subdomain {
+	case "demo":
+		c.subdomainCommander.HandleCommand(msg, commandPath)
+	default:
+		log.Printf("Subdomain.HandleCommand: unknow command - %s", commandPath.Subdomain)
 	}
 }

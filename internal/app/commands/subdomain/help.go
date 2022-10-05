@@ -7,7 +7,9 @@ import (
 func (c *SubdomainCommander) Help(inputMessage *tgbotapi.Message) {
 	msg := tgbotapi.NewMessage(inputMessage.Chat.ID,
 		"/help - help\n"+
-			"/list - list products")
+			"/list - list products\n"+
+			"/get - get product from list\n"+
+			"/remove - remove product from list")
 
 	c.bot.Send(msg)
 }

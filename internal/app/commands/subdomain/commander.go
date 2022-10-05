@@ -10,7 +10,7 @@ import (
 
 type SubdomainCommander struct {
 	bot            *tgbotapi.BotAPI
-	productService *product.Service
+	productService product.ServiceInterface
 }
 
 func NewSubdomainCommander(bot *tgbotapi.BotAPI) *SubdomainCommander {
@@ -41,6 +41,12 @@ func (c *SubdomainCommander) HandleCommand(msg *tgbotapi.Message, commandPath pa
 		c.List(msg)
 	case "get":
 		c.Get(msg)
+	case "remove":
+		c.Remove(msg)
+	case "update":
+		c.Update(msg)
+	case "new":
+		c.New(msg)
 	default:
 		c.Default(msg)
 	}
